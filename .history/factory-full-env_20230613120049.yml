@@ -1,0 +1,67 @@
+version: '3.9'
+services:
+  factory-gateway:
+    image: experilabs/factorygateway
+    environment:
+    - ASPNETCORE_ENVIRONMENT=Staging
+    ports:
+    - "80:80"
+    networks:
+    - fabrika-network
+
+  fabrikamobile-admin-ui:
+    image: experilabs/fabrikamobile-admin-ui:v1.0
+    ports:
+    - "3000:3000"
+
+  factory-identity:
+    image: experilabs/factoryidentityserver:latest
+    environment:
+    - ASPNETCORE_ENVIRONMENT=DockerStaging
+    ports:
+    - "5001:80"
+    networks:
+    - fabrika-network
+
+  factory-api:
+    image: experilabs/factoryapi:latest
+    environment:
+    - ASPNETCORE_ENVIRONMENT=DockerStaging
+    ports:
+    - "5002:80"
+    networks:
+    - fabrika-network
+    volumes:
+    - /home/ubuntu/FabrikaMobil/excell:/usr/share/fonts
+
+  postgres_stack_postgres:
+    image: postgres
+    volumes:
+    - volume-postgres-data:/var/lib/postgresql/data
+    environment:
+     POSTGRES_DB: FabrikaMobil
+     POSTGRES_USER: fabrika
+     POSTGRES_PASSWORD: fabrika2023
+    ports:
+    - 5432:5432
+    networks:
+    - fabrika-network
+
+  redis_container:
+    image: redis
+    ports:
+    - "6380:6379"
+    networks:
+    - fabrika-network
+    volumes:
+    - redis_data:/data
+
+
+
+networks:
+  fabrika-network: 
+    external: true
+
+volumes:
+  volume-postgres-data:
+  redis_data:
